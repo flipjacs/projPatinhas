@@ -21,13 +21,15 @@ class Animal {
     return rows[0] || null;
   }
 
-  static async listarDisponiveis() {
+  static async listarDisponiveis(limite, offset) {
     const [rows] = await pool.query(
       `SELECT a.*, u.nome AS dono_nome, u.cidade AS dono_cidade
        FROM animais a
        JOIN usuarios u ON a.usuario_id = u.id
        WHERE a.disponivel = TRUE
-       ORDER BY a.criado_em DESC`
+       ORDER BY a.criado_em DESC
+       LIMIT ? OFFSET ?`,
+      [limite, offset]
     );
     return rows;
   }
@@ -40,11 +42,24 @@ class Animal {
     return rows;
   }
 
-  static async atualizar(id, { nome, especie, raca, idade, porte, descricao, foto_url, disponivel }) {
+  static async atualizar(id, campos) {
+    const camposPermitidos = ['nome', 'especie', 'raca', 'idade', 'porte', 'descricao', 'foto_url', 'disponivel'];
+    const updates = [];
+    const valores = [];
+
+    for (const campo of camposPermitidos) {
+      if (campos[campo] !== undefined) {
+        updates.push(`${campo} = ?`);
+        valores.push(campos[campo]);
+      }
+    }
+
+    if (updates.length === 0) return;
+
+    valores.push(id);
     await pool.query(
-      `UPDATE animais SET nome = ?, especie = ?, raca = ?, idade = ?, porte = ?,
-       descricao = ?, foto_url = ?, disponivel = ? WHERE id = ?`,
-      [nome, especie, raca, idade, porte, descricao, foto_url, disponivel, id]
+      `UPDATE animais SET ${updates.join(', ')} WHERE id = ?`,
+      valores
     );
   }
 

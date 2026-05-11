@@ -22,17 +22,32 @@ class Usuario {
     return rows[0] || null;
   }
 
-  static async listarTodos() {
+  static async listarTodos(limite, offset) {
     const [rows] = await pool.query(
-      'SELECT id, nome, email, telefone, cidade, estado, criado_em FROM usuarios'
+      'SELECT id, nome, email, telefone, cidade, estado, criado_em FROM usuarios ORDER BY criado_em DESC LIMIT ? OFFSET ?',
+      [limite, offset]
     );
     return rows;
   }
 
-  static async atualizar(id, { nome, telefone, cidade, estado }) {
+  static async atualizar(id, campos) {
+    const camposPermitidos = ['nome', 'telefone', 'cidade', 'estado'];
+    const updates = [];
+    const valores = [];
+
+    for (const campo of camposPermitidos) {
+      if (campos[campo] !== undefined) {
+        updates.push(`${campo} = ?`);
+        valores.push(campos[campo]);
+      }
+    }
+
+    if (updates.length === 0) return;
+
+    valores.push(id);
     await pool.query(
-      'UPDATE usuarios SET nome = ?, telefone = ?, cidade = ?, estado = ? WHERE id = ?',
-      [nome, telefone, cidade, estado, id]
+      `UPDATE usuarios SET ${updates.join(', ')} WHERE id = ?`,
+      valores
     );
   }
 

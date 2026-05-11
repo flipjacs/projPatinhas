@@ -8,8 +8,25 @@ class AnimalService {
       throw new Error('Usuário não encontrado');
     }
 
+    const especiesValidas = ['cachorro', 'gato', 'outro'];
+    if (!especiesValidas.includes(especie)) {
+      throw new Error('Espécie inválida. Use: cachorro, gato ou outro');
+    }
+
+    const portesValidos = ['pequeno', 'medio', 'grande'];
+    if (!portesValidos.includes(porte)) {
+      throw new Error('Porte inválido. Use: pequeno, medio ou grande');
+    }
+
     const id = await Animal.criar({
-      nome, especie, raca, idade, porte, descricao, foto_url, usuario_id
+      nome: nome.trim(),
+      especie,
+      raca: raca ? raca.trim() : null,
+      idade: idade ? idade.trim() : null,
+      porte,
+      descricao: descricao ? descricao.trim() : null,
+      foto_url: foto_url || null,
+      usuario_id
     });
 
     return await Animal.buscarPorId(id);
@@ -23,8 +40,9 @@ class AnimalService {
     return animal;
   }
 
-  async listarDisponiveis() {
-    return await Animal.listarDisponiveis();
+  async listarDisponiveis(pagina = 1, limite = 20) {
+    const offset = (pagina - 1) * limite;
+    return await Animal.listarDisponiveis(limite, offset);
   }
 
   async listarPorUsuario(usuario_id) {
