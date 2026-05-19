@@ -1,0 +1,545 @@
+/* RESET */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+  background:linear-gradient(to bottom,#fff0f5,#ffe4ec);
+  overflow-x:hidden;
+}
+
+/* NAVBAR */
+.navbar{
+  width:100%;
+  min-height:95px;
+
+  background:#ff9ecb;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  padding:20px 40px;
+
+  flex-wrap:wrap;
+
+  border-bottom:3px solid #ffc1d6;
+}
+
+.logo-area{
+  display:flex;
+  align-items:center;
+  gap:15px;
+}
+
+.logo{
+  width:68px;
+  height:68px;
+
+  border-radius:50%;
+
+  object-fit:cover;
+
+  background:white;
+
+  padding:5px;
+}
+
+.logo-text{
+  font-size:30px;
+  font-weight:900;
+
+  color:#ff4f93;
+
+  text-shadow:
+    2px 2px 0px #fff,
+    4px 4px 8px rgba(255,105,180,0.15);
+}
+
+.menu{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  flex-wrap:wrap;
+}
+
+.menu a{
+  text-decoration:none;
+
+  color:#ff4f93;
+
+  background:white;
+
+  padding:12px 22px;
+
+  border-radius:30px;
+
+  font-size:16px;
+  font-weight:bold;
+
+  transition:0.3s;
+}
+
+.menu a:hover{
+  background:#ff4f93;
+  color:white;
+}
+
+/* CONTAINER */
+.container{
+  width:90%;
+  margin:auto;
+}
+
+.top-area{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  margin:35px 0;
+
+  flex-wrap:wrap;
+
+  gap:20px;
+}
+
+.top-area h1{
+  color:#c2185b;
+  font-size:40px;
+}
+
+/* BOTÃO CADASTRAR */
+.btn-cadastrar{
+  padding:14px 24px;
+
+  border:none;
+
+  border-radius:30px;
+
+  background:#ff6fa5;
+
+  color:white;
+
+  font-weight:bold;
+
+  cursor:pointer;
+
+  transition:0.3s;
+}
+
+.btn-cadastrar:hover{
+  background:#ff4f92;
+}
+
+/* CARDS */
+.cards{
+  width:100%;
+
+  display:flex;
+
+  justify-content:center;
+
+  gap:30px;
+
+  flex-wrap:wrap;
+
+  margin-bottom:60px;
+}
+
+.card{
+  width:380px;
+
+  background:white;
+
+  border-radius:25px;
+
+  overflow:hidden;
+
+  box-shadow:0 8px 20px rgba(0,0,0,0.08);
+
+  transition:0.3s;
+}
+
+.card:hover{
+  transform:translateY(-8px);
+}
+
+.card img{
+  width:100%;
+
+  height:260px;
+
+  object-fit:cover;
+
+  display:block;
+}
+
+.card-content{
+  padding:25px;
+
+  text-align:center;
+}
+
+.card-content h2{
+  color:#ff4f93;
+
+  font-size:48px;
+
+  margin-bottom:20px;
+}
+
+/* TAGS */
+.tags{
+  display:flex;
+
+  justify-content:center;
+
+  flex-wrap:wrap;
+
+  gap:10px;
+
+  margin:20px 0;
+}
+
+.tag{
+  padding:10px 16px;
+
+  border-radius:20px;
+
+  color:white;
+
+  font-size:14px;
+
+  font-weight:bold;
+}
+
+.gato{
+  background:#ff7fa7;
+}
+
+.cachorro{
+  background:#37c9a8;
+}
+
+.roxo{
+  background:#9b59ff;
+}
+
+.rosa{
+  background:#ffb6c1;
+}
+
+/* BOTÃO DETALHES */
+.btn-detalhes{
+  width:100%;
+
+  padding:16px;
+
+  border:none;
+
+  background:#ff4f93;
+
+  color:white;
+
+  border-radius:18px;
+
+  font-size:20px;
+
+  font-weight:bold;
+
+  cursor:pointer;
+
+  transition:0.3s;
+}
+
+.btn-detalhes:hover{
+  background:#ff2f7a;
+}
+
+/* MODAL */
+.modal{
+  position:fixed;
+
+  inset:0;
+
+  background:rgba(0,0,0,0.6);
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:flex-start;
+
+  padding-top:120px;
+
+  padding-bottom:40px;
+
+  overflow-y:auto;
+
+  z-index:999;
+}
+
+.modal-content{
+  background:white;
+
+  width:900px;
+
+  max-width:95%;
+
+  display:flex;
+
+  border-radius:25px;
+
+  overflow:hidden;
+
+  position:relative;
+
+  margin-bottom:40px;
+}
+
+.modal-left{
+  width:50%;
+}
+
+.modal-left img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.modal-right{
+  width:50%;
+
+  padding:30px;
+}
+
+.modal-right h1{
+  color:#ff4f93;
+
+  margin-bottom:25px;
+}
+
+.info-grid{
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:15px;
+
+  margin-bottom:25px;
+}
+
+.info{
+  background:#fff0f6;
+
+  padding:15px;
+
+  border-radius:15px;
+}
+
+.info h3{
+  color:#ff4f93;
+
+  margin-bottom:5px;
+}
+
+.descricao h2{
+  color:#c2185b;
+
+  margin-bottom:10px;
+}
+
+/* BOTÃO ADOTAR */
+.btn-adotar{
+  width:100%;
+
+  padding:16px;
+
+  margin-top:25px;
+
+  border:none;
+
+  border-radius:15px;
+
+  background:#ff4f93;
+
+  color:white;
+
+  font-size:18px;
+
+  font-weight:bold;
+
+  cursor:pointer;
+
+  transition:0.3s;
+}
+
+.btn-adotar:hover{
+  background:#ff2f7a;
+}
+
+/* FECHAR */
+.fechar{
+  position:absolute;
+
+  top:15px;
+  right:20px;
+
+  width:45px;
+  height:45px;
+
+  background:#ff4f93;
+
+  color:white;
+
+  border-radius:50%;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:28px;
+  font-weight:bold;
+
+  cursor:pointer;
+
+  transition:0.3s;
+
+  z-index:1000;
+}
+
+.fechar:hover{
+  background:#ff2f7a;
+
+  transform:scale(1.1) rotate(90deg);
+}
+
+/* FOOTER */
+.footer{
+  background:#ff4f93;
+
+  padding:70px 20px;
+
+  text-align:center;
+
+  color:white;
+}
+
+.footer-container{
+  width:90%;
+
+  margin:auto;
+
+  display:flex;
+
+  flex-direction:column;
+
+  align-items:center;
+
+  justify-content:center;
+
+  gap:30px;
+}
+
+.footer h3{
+  font-size:55px;
+
+  line-height:1.1;
+}
+
+.footer-socials{
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  gap:20px;
+
+  flex-wrap:wrap;
+}
+
+.footer-socials a{
+  width:70px;
+  height:70px;
+
+  background:white;
+
+  border-radius:50%;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  text-decoration:none;
+
+  font-size:30px;
+
+  color:#ff4f93;
+
+  transition:0.3s;
+}
+
+.footer-socials a:hover{
+  transform:scale(1.1);
+}
+
+.footer p{
+  font-size:18px;
+
+  max-width:400px;
+
+  line-height:1.5;
+}
+
+/* RESPONSIVO */
+@media(max-width:900px){
+
+  .navbar{
+    justify-content:center;
+
+    gap:20px;
+  }
+
+  .logo-text{
+    font-size:24px;
+  }
+
+  .top-area{
+    justify-content:center;
+
+    text-align:center;
+  }
+
+  .top-area h1{
+    font-size:32px;
+  }
+
+  .card{
+    width:100%;
+    max-width:380px;
+  }
+
+  .modal-content{
+    flex-direction:column;
+  }
+
+  .modal-left,
+  .modal-right{
+    width:100%;
+  }
+
+  .modal-left{
+    height:300px;
+  }
+
+  .footer h3{
+    font-size:40px;
+  }
+
+}
