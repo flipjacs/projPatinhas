@@ -197,6 +197,30 @@ function Home() {
               (92) 98473-6152
             </a>
 
+            <div className="footer-socials">
+
+  <a
+    href="https://instagram.com"
+    target="_blank"
+    rel="noreferrer"
+  >
+    <i>📸</i>
+  </a>
+
+  <a
+    href="https://wa.me/5592999999999"
+    target="_blank"
+    rel="noreferrer"
+  >
+    <i>💬</i>
+  </a>
+
+  <a href="mailto:contato@patinhas.com">
+    <i>✉️</i>
+  </a>
+
+</div>
+
           </div>
 
         </div>
