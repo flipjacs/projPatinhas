@@ -1,384 +1,286 @@
-import { useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import "../css/adotaranimalstyle.css";
 
+const ANIMAIS = [
+  {
+    id: "luna",
+    nome: "Luna",
+    img: "https://placecats.com/500/400",
+    especie: "Gato",
+    raca: "SRD",
+    idade: "2 anos",
+    peso: "2 kg",
+    porte: "Pequeno",
+    descricao: "Luna é carinhosa e ama colo.",
+  },
+  {
+    id: "mel",
+    nome: "Mel",
+    img: "https://placedog.net/500/400?id=5",
+    especie: "Cachorro",
+    raca: "Husky Siberiano",
+    idade: "3 meses",
+    peso: "1,5 kg",
+    porte: "Pequeno",
+    descricao: "Mel é brincalhona e cheia de energia.",
+  },
+  {
+    id: "nina",
+    nome: "Nina",
+    img: "https://placecats.com/500/401",
+    especie: "Gato",
+    raca: "SRD",
+    idade: "1 ano",
+    peso: "2 kg",
+    porte: "Pequeno",
+    descricao: "Nina é calma e muito carinhosa.",
+  },
+];
+
+const FILTERS = [
+  { id: "todos", label: "Todos" },
+  { id: "Cachorro", label: "Cachorros" },
+  { id: "Gato", label: "Gatos" },
+];
+
 function AdotarAnimal() {
+  const [selected, setSelected] = useState(null);
+  const [filter, setFilter] = useState("todos");
 
-  const [modalAberto, setModalAberto] = useState(false);
+  const filtered = useMemo(
+    () => (filter === "todos" ? ANIMAIS : ANIMAIS.filter((a) => a.especie === filter)),
+    [filter]
+  );
 
-  const [animalSelecionado, setAnimalSelecionado] = useState({});
-
-  const abrirModal = (
-    nome,
-    img,
-    idade,
-    especie,
-    porte,
-    peso,
-    raca,
-    desc
-  ) => {
-
-    setAnimalSelecionado({
-      nome,
-      img,
-      idade,
-      especie,
-      porte,
-      peso,
-      raca,
-      desc,
-    });
-
-    setModalAberto(true);
-
-  };
-
-  const fecharModal = () => {
-    setModalAberto(false);
-  };
+  const closeModal = useCallback(() => setSelected(null), []);
 
   return (
     <>
-
-      {/* NAVBAR */}
-      <nav className="navbar">
-
-        <div className="logo-area">
-
-          <img
-            src="https://www.clipartkey.com/mpngs/m/162-1622703_transparent-pink-cat-clipart-pink-paw-print-png.png"
-            alt="Logo"
-            className="logo"
-          />
-
-          <span className="logo-text">
-            Projeto Patinhas
-          </span>
-
-        </div>
-
-        <div className="menu">
-
-          <Link to="/">
-            Início
-          </Link>
-
-          <Link to="/adotar">
-            Adotar Animal
-          </Link>
-
-          <Link to="/cadastro">
-            Cadastro
-          </Link>
-
-          <Link to="/ongs">
-            ONGs
-          </Link>
-
-        </div>
-
-      </nav>
-
-      {/* CONTEÚDO */}
       <div className="container">
-
-        <div className="top-area">
-
-          <h1>
-            Animais para adoção 🐾
-          </h1>
-
-          <Link to="/cadastro">
-
-            <button className="btn-cadastrar">
-              Cadastrar animal
-            </button>
-
+        <header className="top-area">
+          <div className="top-area-text">
+            <p className="page-eyebrow">Disponíveis para adoção</p>
+            <h1>Encontre seu novo melhor amigo</h1>
+            <p className="top-area-meta" aria-live="polite">
+              {filtered.length} {filtered.length === 1 ? "animal" : "animais"} aguardando
+              um lar.
+            </p>
+          </div>
+          <Link to="/cadastro" className="btn btn--secondary">
+            Cadastrar animal
           </Link>
+        </header>
 
+        <div className="filters" role="tablist" aria-label="Filtrar por espécie">
+          {FILTERS.map((option) => (
+            <button
+              key={option.id}
+              type="button"
+              role="tab"
+              aria-selected={filter === option.id}
+              className={
+                filter === option.id ? "filter-chip filter-chip--active" : "filter-chip"
+              }
+              onClick={() => setFilter(option.id)}
+            >
+              {option.label}
+            </button>
+          ))}
         </div>
 
-        {/* CARDS */}
-        <div className="cards">
-
-          {/* LUNA */}
-          <div className="card">
-
-            <img
-              src="https://placecats.com/500/400"
-              alt="Luna"
-            />
-
-            <div className="card-content">
-
-              <h2>Luna</h2>
-
-              <div className="tags">
-
-                <div className="tag gato">
-                  Gato
-                </div>
-
-                <div className="tag roxo">
-                  2 Anos
-                </div>
-
-                <div className="tag rosa">
-                  Pequeno
-                </div>
-
-              </div>
-
-              <button
-                className="btn-detalhes"
-                onClick={() =>
-                  abrirModal(
-                    "Luna",
-                    "https://placecats.com/500/400",
-                    "2 Anos",
-                    "Gato",
-                    "Pequeno",
-                    "2kg",
-                    "SRD",
-                    "Luna é carinhosa e ama colo."
-                  )
-                }
-              >
-                Ver Detalhes
-              </button>
-
-            </div>
-
+        {filtered.length === 0 ? (
+          <div className="empty-state" role="status">
+            <p className="empty-state-emoji" aria-hidden="true">
+              🐾
+            </p>
+            <h2>Nenhum animal nesta categoria.</h2>
+            <p>Tente outra espécie ou volte mais tarde — recebemos novos amigos toda semana.</p>
+            <button
+              type="button"
+              className="btn btn--secondary"
+              onClick={() => setFilter("todos")}
+            >
+              Ver todos
+            </button>
           </div>
-
-          {/* MEL */}
-          <div className="card">
-
-            <img
-              src="https://placedog.net/500/400?id=5"
-              alt="Mel"
-            />
-
-            <div className="card-content">
-
-              <h2>Mel</h2>
-
-              <div className="tags">
-
-                <div className="tag cachorro">
-                  Cachorro
+        ) : (
+          <ul className="cards">
+            {filtered.map((animal) => (
+              <li key={animal.id} className="card">
+                <div className="card-media">
+                  <img
+                    src={animal.img}
+                    alt={`Foto de ${animal.nome}, ${animal.especie.toLowerCase()}`}
+                    width={500}
+                    height={400}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span
+                    className={`card-species card-species--${animal.especie.toLowerCase()}`}
+                  >
+                    {animal.especie}
+                  </span>
                 </div>
-
-                <div className="tag roxo">
-                  3 Meses
+                <div className="card-content">
+                  <h2>{animal.nome}</h2>
+                  <p className="card-meta">
+                    {animal.raca} · {animal.idade} · {animal.porte}
+                  </p>
+                  <p className="card-desc">{animal.descricao}</p>
+                  <button
+                    type="button"
+                    className="btn btn--primary btn--block btn-detalhes"
+                    onClick={() => setSelected(animal)}
+                  >
+                    Conhecer {animal.nome}
+                  </button>
                 </div>
-
-                <div className="tag rosa">
-                  Pequeno
-                </div>
-
-              </div>
-
-              <button
-                className="btn-detalhes"
-                onClick={() =>
-                  abrirModal(
-                    "Mel",
-                    "https://placedog.net/500/400?id=5",
-                    "3 Meses",
-                    "Cachorro",
-                    "Pequeno",
-                    "1,5kg",
-                    "Husky Siberiano",
-                    "Mel é brincalhona e cheia de energia."
-                  )
-                }
-              >
-                Ver Detalhes
-              </button>
-
-            </div>
-
-          </div>
-
-          {/* NINA */}
-          <div className="card">
-
-            <img
-              src="https://placecats.com/500/401"
-              alt="Nina"
-            />
-
-            <div className="card-content">
-
-              <h2>Nina</h2>
-
-              <div className="tags">
-
-                <div className="tag gato">
-                  Gato
-                </div>
-
-                <div className="tag roxo">
-                  1 Ano
-                </div>
-
-                <div className="tag rosa">
-                  Pequeno
-                </div>
-
-              </div>
-
-              <button
-                className="btn-detalhes"
-                onClick={() =>
-                  abrirModal(
-                    "Nina",
-                    "https://placecats.com/500/401",
-                    "1 Ano",
-                    "Gato",
-                    "Pequeno",
-                    "2kg",
-                    "SRD",
-                    "Nina é calma e muito carinhosa."
-                  )
-                }
-              >
-                Ver Detalhes
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
-      {/* MODAL */}
-      {modalAberto && (
-
-        <div className="modal">
-
-          <div className="modal-content">
-
-            <span
-              className="fechar"
-              onClick={fecharModal}
-            >
-              ×
-            </span>
-
-            <div className="modal-left">
-
-              <img
-                src={animalSelecionado.img}
-                alt={animalSelecionado.nome}
-              />
-
-            </div>
-
-            <div className="modal-right">
-
-              <h1>
-                {animalSelecionado.nome}
-              </h1>
-
-              <div className="info-grid">
-
-                <div className="info">
-                  <h3>Peso</h3>
-                  <p>{animalSelecionado.peso}</p>
-                </div>
-
-                <div className="info">
-                  <h3>Idade</h3>
-                  <p>{animalSelecionado.idade}</p>
-                </div>
-
-                <div className="info">
-                  <h3>Espécie</h3>
-                  <p>{animalSelecionado.especie}</p>
-                </div>
-
-                <div className="info">
-                  <h3>Porte</h3>
-                  <p>{animalSelecionado.porte}</p>
-                </div>
-
-                <div className="info">
-                  <h3>Raça</h3>
-                  <p>{animalSelecionado.raca}</p>
-                </div>
-
-              </div>
-
-              <div className="descricao">
-
-                <h2>Descrição</h2>
-
-                <p>
-                  {animalSelecionado.desc}
-                </p>
-
-              </div>
-
-              <button className="btn-adotar">
-                Quero Adotar 🐾
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      )}
-
-      {/* FOOTER */}
-      <footer className="footer">
-
-        <div className="footer-container">
-
-          <h3>
-            Entre em contato 🐾
-          </h3>
-
-          <div className="footer-socials">
-
-            <a
-              href="https://instagram.com"
-              target="_blank"
-              rel="noreferrer"
-            >
-              📸
-            </a>
-
-            <a
-              href="https://wa.me/5599999999999"
-              target="_blank"
-              rel="noreferrer"
-            >
-              💬
-            </a>
-
-            <a href="mailto:contato@projetopatinhas.com">
-              ✉️
-            </a>
-
-          </div>
-
-          <p>
-            © 2026 Projeto Patinhas.
-            Todos os direitos reservados.
-          </p>
-
-        </div>
-
-      </footer>
-
+      {selected && <AnimalModal animal={selected} onClose={closeModal} />}
     </>
+  );
+}
+
+const FOCUSABLE = [
+  "a[href]",
+  "button:not([disabled])",
+  "input:not([disabled])",
+  "select:not([disabled])",
+  "textarea:not([disabled])",
+  '[tabindex]:not([tabindex="-1"])',
+].join(",");
+
+function AnimalModal({ animal, onClose }) {
+  const titleId = useId();
+  const dialogRef = useRef(null);
+  const closeRef = useRef(null);
+
+  // Lock body scroll
+  useEffect(() => {
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, []);
+
+  // Restore focus to previously focused element on close
+  useEffect(() => {
+    const previouslyFocused = document.activeElement;
+    closeRef.current?.focus();
+    return () => {
+      if (previouslyFocused instanceof HTMLElement) previouslyFocused.focus();
+    };
+  }, []);
+
+  // Escape close + Tab focus trap
+  useEffect(() => {
+    function onKey(event) {
+      if (event.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (event.key !== "Tab" || !dialogRef.current) return;
+      const focusables = dialogRef.current.querySelectorAll(FOCUSABLE);
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  function onOverlayClick(event) {
+    if (event.target === event.currentTarget) onClose();
+  }
+
+  return (
+    <div className="modal-overlay" onClick={onOverlayClick}>
+      <div
+        ref={dialogRef}
+        className="modal-content"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+      >
+        <button
+          ref={closeRef}
+          type="button"
+          className="fechar"
+          aria-label="Fechar"
+          onClick={onClose}
+        >
+          <span aria-hidden="true">×</span>
+        </button>
+
+        <div className="modal-left">
+          <img
+            src={animal.img}
+            alt={`${animal.nome}, ${animal.especie.toLowerCase()}`}
+            width={500}
+            height={500}
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+
+        <div className="modal-right">
+          <p className="modal-species">{animal.especie}</p>
+          <h1 id={titleId}>{animal.nome}</h1>
+          <p className="modal-tagline">{animal.descricao}</p>
+
+          <dl className="info-grid">
+            <div className="info">
+              <dt>Peso</dt>
+              <dd>{animal.peso}</dd>
+            </div>
+            <div className="info">
+              <dt>Idade</dt>
+              <dd>{animal.idade}</dd>
+            </div>
+            <div className="info">
+              <dt>Espécie</dt>
+              <dd>{animal.especie}</dd>
+            </div>
+            <div className="info">
+              <dt>Porte</dt>
+              <dd>{animal.porte}</dd>
+            </div>
+            <div className="info">
+              <dt>Raça</dt>
+              <dd>{animal.raca}</dd>
+            </div>
+          </dl>
+
+          <div className="modal-actions">
+            <button type="button" className="btn btn--primary btn--block">
+              Quero adotar {animal.nome}
+            </button>
+            <button
+              type="button"
+              className="btn btn--ghost btn--block"
+              onClick={onClose}
+            >
+              Continuar navegando
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 

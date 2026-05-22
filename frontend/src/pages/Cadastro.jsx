@@ -1,239 +1,256 @@
-import { Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import "../css/cadastrostyle.css";
 
+const TIPOS = [
+  { id: "cachorro", label: "Cachorro", emoji: "🐶" },
+  { id: "gato", label: "Gato", emoji: "🐱" },
+];
+
+const FAIXAS_ETARIAS = [
+  { id: "0-2", label: "0 a 2 anos" },
+  { id: "3-5", label: "3 a 5 anos" },
+  { id: "6-8", label: "6 a 8 anos" },
+  { id: "9+", label: "9 anos ou mais" },
+];
+
+const initial = { nome: "", tipo: "", faixaEtaria: "", descricao: "" };
+const MAX_DESC = 500;
+
 function Cadastro() {
+  const [values, setValues] = useState(initial);
+  const [errors, setErrors] = useState({});
+  const [status, setStatus] = useState("idle");
+  const successRef = useRef(null);
+
+  function update(field, value) {
+    setValues((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
+  }
+
+  function validate(state) {
+    const next = {};
+    if (state.nome.trim().length < 2)
+      next.nome = "Informe um nome com pelo menos 2 caracteres.";
+    if (!state.tipo) next.tipo = "Selecione o tipo do animal.";
+    if (!state.faixaEtaria) next.faixaEtaria = "Selecione a faixa etária.";
+    if (state.descricao.trim().length < 10)
+      next.descricao = "A descrição deve ter pelo menos 10 caracteres.";
+    return next;
+  }
+
+  async function onSubmit(event) {
+    event.preventDefault();
+    const next = validate(values);
+    setErrors(next);
+    if (Object.keys(next).length > 0) {
+      const firstErrorId = Object.keys(next)[0];
+      const node = document.getElementById(firstErrorId);
+      node?.focus({ preventScroll: true });
+      node?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    setStatus("submitting");
+    await new Promise((resolve) => setTimeout(resolve, 600));
+    setStatus("success");
+    setValues(initial);
+  }
+
+  // Scroll the success banner into view when it appears
+  useEffect(() => {
+    if (status === "success") {
+      successRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [status]);
+
   return (
-    <>
+    <section className="cadastro" aria-labelledby="cadastro-title">
+      <header className="cadastro-header">
+        <p className="page-eyebrow">Novo cadastro</p>
+        <h1 id="cadastro-title">Cadastre um animal para adoção</h1>
+        <p className="cadastro-sub">
+          Quanto mais detalhes você fornecer, maiores as chances de encontrar uma
+          família amorosa.
+        </p>
+      </header>
 
-      {/* NAVBAR */}
-      <nav className="navbar">
-
-        <div className="logo-area">
-
-          <img
-            src="https://www.clipartkey.com/mpngs/m/162-1622703_transparent-pink-cat-clipart-pink-paw-print-png.png"
-            alt="Logo"
-            className="logo"
-          />
-
-          <span className="logo-text">
-            Projeto Patinhas
+      {status === "success" && (
+        <div
+          ref={successRef}
+          role="status"
+          aria-live="polite"
+          className="alert alert--success"
+        >
+          <span className="alert-icon" aria-hidden="true">
+            ✓
           </span>
-
-        </div>
-
-        <div className="menu">
-
-          <Link to="/">
-            Início
-          </Link>
-
-          <Link to="/adotar">
-            Adotar Animal
-          </Link>
-
-          <Link to="/cadastro">
-            Cadastro
-          </Link>
-
-          <Link to="/ongs">
-            ONGs
-          </Link>
-
-        </div>
-
-      </nav>
-
-      {/* CADASTRO */}
-      <section className="cadastro">
-
-        <h1>
-          Cadastro de Animal 🐶🐱
-        </h1>
-
-        <div className="upload">
-
-          <h2>
-            Comece enviando as fotos do animalzinho 📸
-          </h2>
-
-          <p>
-            Arraste e solte uma foto aqui ou clique para selecionar
-          </p>
-
-        </div>
-
-        <div className="form-grid">
-
-          {/* ESQUERDA */}
-          <div className="box">
-
-            <h2>
-              Opções obrigatórias
-            </h2>
-
-            <h3>Tipo</h3>
-
-            <br />
-
-            <label>
-              <input type="checkbox" />
-              Cachorro
-            </label>
-
-            <br /><br />
-
-            <label>
-              <input type="checkbox" />
-              Gato
-            </label>
-
-            <br /><br /><br />
-
-            <h3>Idade</h3>
-
-            <br />
-
-            <label>
-              <input type="checkbox" />
-              0 - 2 anos
-            </label>
-
-            <br /><br />
-
-            <label>
-              <input type="checkbox" />
-              3 - 5 anos
-            </label>
-
-            <br /><br />
-
-            <label>
-              <input type="checkbox" />
-              6 - 8 anos
-            </label>
-
+          <div>
+            <strong>Cadastro enviado!</strong>
+            <p>Nossa equipe entrará em contato em breve.</p>
           </div>
+        </div>
+      )}
 
-          {/* DIREITA */}
-          <div className="box">
+      <form onSubmit={onSubmit} noValidate className="cadastro-form">
+        <p className="form-hint-top">
+          Os campos marcados com <span className="required-mark" aria-hidden="true">*</span> são obrigatórios.
+        </p>
 
-            <h2>
-              Descreva o animal ✨
-            </h2>
-
-            <textarea placeholder="Descreva o animal o melhor possível..."></textarea>
-
-          </div>
-
+        <div className="upload" role="group" aria-label="Envio de foto">
+          <p className="upload-icon" aria-hidden="true">📸</p>
+          <h2>Envie fotos do animalzinho</h2>
+          <p>Arraste e solte uma foto aqui ou clique para selecionar.</p>
         </div>
 
-        <button className="btn-salvar">
-          Salvar cadastro 💖
-        </button>
-
-      </section>
-
-      {/* FOOTER */}
-      <footer className="footer" id="contato">
-
-        <div className="footer-container">
-
-          {/* LOGO */}
-          <div className="footer-brand">
-
-            <img
-              src="https://www.clipartkey.com/mpngs/m/162-1622703_transparent-pink-cat-clipart-pink-paw-print-png.png"
-              alt="Logo"
-              className="footer-logo"
-            />
-
-            <h2>
-              Projeto Patinhas
-            </h2>
-
-            <p>
-              Todos os direitos reservados © 2026
+        <div className="field">
+          <label htmlFor="nome">
+            Nome do animal <span className="required-mark" aria-hidden="true">*</span>
+            <span className="sr-only">obrigatório</span>
+          </label>
+          <input
+            id="nome"
+            name="nome"
+            type="text"
+            autoComplete="off"
+            placeholder="Ex.: Luna"
+            value={values.nome}
+            required
+            onChange={(event) => update("nome", event.target.value)}
+            aria-invalid={Boolean(errors.nome) || undefined}
+            aria-describedby={errors.nome ? "nome-error" : undefined}
+          />
+          {errors.nome && (
+            <p id="nome-error" className="field-error" role="alert">
+              {errors.nome}
             </p>
-
-            <div className="footer-socials">
-
-              <a href="#">
-                <i className="fa-brands fa-facebook-f"></i>
-              </a>
-
-              <a href="#">
-                <i className="fa-brands fa-x-twitter"></i>
-              </a>
-
-              <a href="#">
-                <i className="fa-brands fa-instagram"></i>
-              </a>
-
-              <a href="#">
-                <i className="fa-brands fa-tiktok"></i>
-              </a>
-
-            </div>
-
-          </div>
-
-          {/* POLÍTICAS */}
-          <div className="footer-column">
-
-            <h3>
-              Políticas
-            </h3>
-
-            <a href="#">
-              Termos e Condições
-            </a>
-
-            <a href="#">
-              Política de Privacidade
-            </a>
-
-          </div>
-
-          {/* SOBRE */}
-          <div className="footer-column">
-
-            <h3>
-              Sobre nós
-            </h3>
-
-            <Link to="/ongs">
-              ONGs
-            </Link>
-
-            <a href="#">
-              Contato
-            </a>
-
-          </div>
-
-          {/* SUPORTE */}
-          <div className="footer-column">
-
-            <h3>
-              Suporte
-            </h3>
-
-            <a href="#">
-              suporte@patinhas.com
-            </a>
-
-            <a href="#">
-              (92) 98473-6152
-            </a>
-
-          </div>
-
+          )}
         </div>
 
-      </footer>
+        <fieldset
+          className="field"
+          aria-describedby={errors.tipo ? "tipo-error" : undefined}
+        >
+          <legend>
+            Tipo do animal <span className="required-mark" aria-hidden="true">*</span>
+            <span className="sr-only">obrigatório</span>
+          </legend>
+          <div className="tipo-grid">
+            {TIPOS.map((tipo, index) => (
+              <label key={tipo.id} className="tipo-card">
+                <input
+                  type="radio"
+                  name="tipo"
+                  value={tipo.id}
+                  id={index === 0 ? "tipo" : undefined}
+                  checked={values.tipo === tipo.id}
+                  onChange={() => update("tipo", tipo.id)}
+                />
+                <span className="tipo-icon" aria-hidden="true">
+                  {tipo.emoji}
+                </span>
+                <span className="tipo-label">{tipo.label}</span>
+              </label>
+            ))}
+          </div>
+          {errors.tipo && (
+            <p id="tipo-error" className="field-error" role="alert">
+              {errors.tipo}
+            </p>
+          )}
+        </fieldset>
 
-    </>
+        <fieldset
+          className="field"
+          aria-describedby={errors.faixaEtaria ? "faixa-error" : undefined}
+        >
+          <legend>
+            Faixa etária <span className="required-mark" aria-hidden="true">*</span>
+            <span className="sr-only">obrigatório</span>
+          </legend>
+          <div className="chip-group">
+            {FAIXAS_ETARIAS.map((faixa, index) => (
+              <label key={faixa.id} className="chip">
+                <input
+                  type="radio"
+                  name="faixaEtaria"
+                  value={faixa.id}
+                  id={index === 0 ? "faixaEtaria" : undefined}
+                  checked={values.faixaEtaria === faixa.id}
+                  onChange={() => update("faixaEtaria", faixa.id)}
+                />
+                <span>{faixa.label}</span>
+              </label>
+            ))}
+          </div>
+          {errors.faixaEtaria && (
+            <p id="faixa-error" className="field-error" role="alert">
+              {errors.faixaEtaria}
+            </p>
+          )}
+        </fieldset>
+
+        <div className="field">
+          <div className="field-label-row">
+            <label htmlFor="descricao">
+              Descrição <span className="required-mark" aria-hidden="true">*</span>
+              <span className="sr-only">obrigatório</span>
+            </label>
+            <span
+              className={
+                values.descricao.length === MAX_DESC
+                  ? "char-counter char-counter--full"
+                  : "char-counter"
+              }
+              aria-hidden="true"
+            >
+              {values.descricao.length}/{MAX_DESC}
+            </span>
+          </div>
+          <textarea
+            id="descricao"
+            name="descricao"
+            rows={6}
+            maxLength={MAX_DESC}
+            placeholder="Conte sobre a personalidade, saúde e história do animal…"
+            value={values.descricao}
+            required
+            onChange={(event) => update("descricao", event.target.value)}
+            aria-invalid={Boolean(errors.descricao) || undefined}
+            aria-describedby={errors.descricao ? "descricao-error" : "descricao-hint"}
+          />
+          {errors.descricao ? (
+            <p id="descricao-error" className="field-error" role="alert">
+              {errors.descricao}
+            </p>
+          ) : (
+            <p id="descricao-hint" className="field-hint">
+              Dica: comportamento, vacinação e o que torna esse animal especial.
+            </p>
+          )}
+        </div>
+
+        <div className="form-actions">
+          <button
+            type="submit"
+            disabled={status === "submitting"}
+            aria-busy={status === "submitting"}
+            className="btn btn--primary btn--lg"
+          >
+            {status === "submitting" ? "Enviando…" : "Salvar cadastro"}
+          </button>
+          <button
+            type="button"
+            className="btn btn--ghost btn--lg"
+            onClick={() => {
+              setValues(initial);
+              setErrors({});
+              setStatus("idle");
+            }}
+          >
+            Limpar
+          </button>
+        </div>
+      </form>
+    </section>
   );
 }
 
