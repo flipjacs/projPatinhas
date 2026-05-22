@@ -1,12 +1,35 @@
 const { Router } = require('express');
 const usuarioController = require('../controllers/usuarioController');
+const { exigirAuth, exigirPapel } = require('../middlewares/auth');
+const { validar } = require('../middlewares/validate');
+const { idParam, paginacao } = require('../schemas/comum.schema');
+const { atualizarUsuarioBody } = require('../schemas/usuario.schema');
 
 const router = Router();
 
-router.post('/', (req, res) => usuarioController.cadastrar(req, res));
-router.get('/', (req, res) => usuarioController.listarTodos(req, res));
-router.get('/:id', (req, res) => usuarioController.buscarPorId(req, res));
-router.put('/:id', (req, res) => usuarioController.atualizar(req, res));
-router.delete('/:id', (req, res) => usuarioController.deletar(req, res));
+// Listar usuários: somente admin.
+router.get('/',
+  exigirAuth, exigirPapel('admin'),
+  validar({ query: paginacao }),
+  usuarioController.listar
+);
+
+router.get('/:id',
+  exigirAuth,
+  validar({ params: idParam }),
+  usuarioController.buscarPorId
+);
+
+router.put('/:id',
+  exigirAuth,
+  validar({ params: idParam, body: atualizarUsuarioBody }),
+  usuarioController.atualizar
+);
+
+router.delete('/:id',
+  exigirAuth,
+  validar({ params: idParam }),
+  usuarioController.deletar
+);
 
 module.exports = router;

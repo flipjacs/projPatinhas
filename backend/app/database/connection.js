@@ -1,13 +1,18 @@
 const mysql = require('mysql2/promise');
-require('dotenv').config();
+const env = require('../config/env');
 
 const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  host: env.DB_HOST,
+  port: env.DB_PORT,
+  user: env.DB_USER,
+  password: env.DB_PASSWORD,
+  database: env.DB_NAME,
   waitForConnections: true,
-  connectionLimit: 10
+  connectionLimit: 10,
+  // mysql2 já usa prepared statements quando passamos parâmetros via `?`.
+  // dateStrings evita perda de fuso/precisão entre Node e MySQL.
+  dateStrings: false,
+  timezone: 'Z',
 });
 
 module.exports = pool;

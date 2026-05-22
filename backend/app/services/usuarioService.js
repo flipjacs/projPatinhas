@@ -1,66 +1,45 @@
-const bcrypt = require('bcryptjs');
 const Usuario = require('../models/usuario');
+const RefreshToken = require('../models/refreshToken');
+const {
+  ErroNaoEncontrado,
+  ErroProibido,
+} = require('../errors/AppError');
+
+function podeOperarUsuario(requisitante, alvoId) {
+  if (!requisitante) return false;
+  if (requisitante.papel === 'admin') return true;
+  return Number(requisitante.id) === Number(alvoId);
+}
 
 class UsuarioService {
-  validarEmail(email) {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
-  }
-
-  validarSenha(senha) {
-    return senha && senha.length >= 6;
-  }
-
-  async cadastrar({ nome, email, senha, telefone, cidade, estado }) {
-    if (!this.validarEmail(email)) {
-      throw new Error('Formato de e-mail inválido');
-    }
-
-    if (!this.validarSenha(senha)) {
-      throw new Error('A senha deve ter no mínimo 6 caracteres');
-    }
-
-    const existente = await Usuario.buscarPorEmail(email);
-    if (existente) {
-      throw new Error('E-mail já cadastrado');
-    }
-
-    const senhaCriptografada = await bcrypt.hash(senha, 10);
-
-    const id = await Usuario.criar({
-      nome: nome.trim(),
-      email: email.trim().toLowerCase(),
-      senha: senhaCriptografada,
-      telefone: telefone ? telefone.trim() : null,
-      cidade: cidade ? cidade.trim() : null,
-      estado: estado ? estado.trim().toUpperCase() : null
-    });
-
-    return { id, nome, email };
-  }
-
   async buscarPorId(id) {
     const usuario = await Usuario.buscarPorId(id);
-    if (!usuario) {
-      throw new Error('Usuário não encontrado');
-    }
+    if (!usuario) throw new ErroNaoEncontrado('Usuário não encontrado');
     return usuario;
   }
 
-  async listarTodos(pagina = 1, limite = 20) {
+  async listar({ pagina, limite }) {
     const offset = (pagina - 1) * limite;
-    return await Usuario.listarTodos(limite, offset);
+    const [itens, total] = await Promise.all([
+      Usuario.listar({ limite, offset }),
+      Usuario.contar(),
+    ]);
+    return { itens, total };
   }
 
-  async atualizar(id, dados) {
+  async atualizar(id, dados, requisitante) {
+    if (!podeOperarUsuario(requisitante, id)) throw new ErroProibido();
     await this.buscarPorId(id);
     await Usuario.atualizar(id, dados);
-    return await Usuario.buscarPorId(id);
+    return Usuario.buscarPorId(id);
   }
 
-  async deletar(id) {
+  async softDelete(id, requisitante) {
+    if (!podeOperarUsuario(requisitante, id)) throw new ErroProibido();
     await this.buscarPorId(id);
-    await Usuario.deletar(id);
+    await Usuario.softDelete(id);
+    // Encerra todas as sessões ativas — segurança ao deletar a conta.
+    await RefreshToken.revogarTodosDoUsuario(id);
   }
 }
 

@@ -1,35 +1,68 @@
-require('dotenv').config();
+const env = require('./app/config/env');
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
+const pinoHttp = require('pino-http');
 
-const usuarioRoutes = require('./app/routes/usuarioRoutes');
-const animalRoutes = require('./app/routes/animalRoutes');
+const rotas = require('./app/routes');
+const { limitadorGlobal } = require('./app/middlewares/rateLimit');
+const { errorHandler, naoEncontradoHandler } = require('./app/middlewares/errorHandler');
 
 const app = express();
 
-// Middlewares
-app.use(cors({
-  origin: 'http://127.0.0.1:5500', // porta do Live Server (ajuste se necessário)
-  methods: ['GET', 'POST', 'PUT', 'DELETE']
+// trust proxy é necessário para que req.ip funcione atrás de nginx/Cloud
+// e para que express-rate-limit identifique o cliente real.
+app.set('trust proxy', 1);
+
+// ─── Logging estruturado ────────────────────────────────────
+app.use(pinoHttp({
+  level: env.NODE_ENV === 'production' ? 'info' : 'debug',
+  redact: {
+    // Não logue nada que possa vazar credenciais.
+    paths: [
+      'req.headers.authorization',
+      'req.headers.cookie',
+      'req.body.senha',
+      'req.body.confirmarSenha',
+    ],
+    remove: true,
+  },
 }));
+
+// ─── Segurança ──────────────────────────────────────────────
+app.use(helmet());
+app.use(cors({
+  origin(origem, cb) {
+    // Permite ferramentas server-to-server / curl (sem Origin)
+    if (!origem) return cb(null, true);
+    if (env.corsOrigins.includes(origem)) return cb(null, true);
+    return cb(new Error('Origem não permitida pela política de CORS'));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+app.use(cookieParser());
 app.use(express.json({ limit: '1mb' }));
+app.use(limitadorGlobal);
 
-// Rotas
-app.use('/api/usuarios', usuarioRoutes);
-app.use('/api/animais', animalRoutes);
-
-// Rota de teste
-app.get('/', (req, res) => {
-  res.json({ mensagem: 'API de Doação de Animais funcionando!' });
+// ─── Healthcheck ────────────────────────────────────────────
+app.get('/', (_req, res) => {
+  res.json({ dados: { servico: 'projeto-patinhas-api', status: 'ok' } });
 });
 
-// Tratamento de erros global
-app.use((err, req, res, next) => {
-  console.error('Erro não tratado:', err.message);
-  res.status(500).json({ erro: 'Erro interno do servidor' });
-});
+// ─── Rotas ──────────────────────────────────────────────────
+app.use('/api', rotas);
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-});
+// ─── 404 + erro central ─────────────────────────────────────
+app.use(naoEncontradoHandler);
+app.use(errorHandler);
+
+if (require.main === module) {
+  app.listen(env.PORT, () => {
+    console.log(`API Patinhas escutando na porta ${env.PORT} (${env.NODE_ENV})`);
+  });
+}
+
+module.exports = app;
