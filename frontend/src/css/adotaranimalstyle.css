@@ -109,6 +109,14 @@
   gap: var(--space-6);
 }
 
+/* `content-visibility: auto` permite ao browser pular layout/paint dos cards
+   fora da viewport. O `contain-intrinsic-size` reserva ~440px de altura para
+   que a barra de rolagem não pule quando os cards "aparecem". */
+.card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 440px;
+}
+
 .card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -208,49 +216,24 @@
   margin-top: auto;
 }
 
-/* ─── MODAL ─── */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(45, 30, 40, 0.55);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  display: grid;
-  place-items: center;
-  padding: var(--space-4);
-  overflow-y: auto;
-  z-index: var(--z-modal);
-  animation: modal-overlay-in var(--dur-base) var(--ease-out);
+.card-actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
 }
 
-.modal-content {
-  background: var(--color-surface);
-  width: 100%;
-  max-width: 880px;
-  max-height: calc(100svh - 2 * var(--space-4));
-  overflow-y: auto;
+.card-actions .btn-detalhes {
+  margin-top: 0;
+}
+
+/* ─── MODAL — conteúdo específico desta página.
+   A estrutura genérica (overlay, container, botão fechar, animações)
+   vive em src/components/Modal.css. ─── */
+
+.modal-animal {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  border-radius: var(--radius-2xl);
-  position: relative;
-  box-shadow: var(--shadow-lg);
-  animation: modal-in var(--dur-slow) var(--ease-out);
-}
-
-@keyframes modal-overlay-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes modal-in {
-  from {
-    opacity: 0;
-    transform: translateY(12px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
 }
 
 .modal-left {
@@ -264,6 +247,13 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* Imagem responsiva no modal — força ocupar toda a coluna esquerda
+   sem deixar buracos verticais. */
+.modal-left .imagem {
+  width: 100%;
+  height: 100%;
   min-height: 320px;
 }
 
@@ -336,39 +326,27 @@
   margin-top: auto;
 }
 
-.fechar {
-  position: absolute;
-  top: var(--space-4);
-  right: var(--space-4);
-  width: 2.5rem;
-  height: 2.5rem;
-  background: var(--color-surface);
-  color: var(--color-text);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-full);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  line-height: 1;
-  cursor: pointer;
-  z-index: 1;
-  box-shadow: var(--shadow-sm);
-  transition: background-color var(--transition-base), color var(--transition-base),
-    transform var(--transition-base);
+/* Placeholder visual quando o animal não tem foto. */
+.card-media-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 220px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--color-pink-100), var(--color-pink-200));
+  color: var(--color-pink-700);
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: var(--tracking-tight);
 }
 
-@media (hover: hover) {
-  .fechar:hover {
-    background: var(--color-pink-500);
-    color: var(--color-text-inverse);
-    border-color: transparent;
-    transform: rotate(90deg);
-  }
+.card-media-placeholder--lg {
+  min-height: 320px;
+  font-size: 5rem;
 }
 
 @media (max-width: 720px) {
-  .modal-content {
+  .modal-animal {
     grid-template-columns: 1fr;
   }
 
@@ -381,12 +359,14 @@
     min-height: 0;
   }
 
-  .modal-right {
-    padding: var(--space-6);
+  .modal-left .imagem {
+    height: 240px;
+    min-height: 0;
+    /* Cancela aspect-ratio inline para respeitar o slot de 240px do mobile. */
+    aspect-ratio: auto !important;
   }
 
-  .fechar {
-    top: var(--space-3);
-    right: var(--space-3);
+  .modal-right {
+    padding: var(--space-6);
   }
 }

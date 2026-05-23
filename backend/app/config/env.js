@@ -28,6 +28,18 @@ const envSchema = z.object({
   COOKIE_SAMESITE: z.enum(['lax', 'strict', 'none']).default('lax'),
 
   BCRYPT_ROUNDS: z.coerce.number().int().min(8).max(15).default(12),
+
+  // ─── Uploads / Storage ─────────────────────────────────
+  // Driver de armazenamento (futuramente: 's3' | 'r2').
+  UPLOADS_DRIVER: z.enum(['local']).default('local'),
+  // Diretório no disco (relativo ao backend/ ou absoluto).
+  UPLOADS_DIR: z.string().default('./uploads'),
+  // Prefixo de URL pública servido por express.static.
+  UPLOADS_PUBLIC_PATH: z.string().default('/uploads'),
+  // Quando definido, monta URLs absolutas (CDN/R2). Vazio = URLs relativas.
+  UPLOADS_BASE_URL: z.string().default(''),
+  // Limite por arquivo (bytes). Default 5 MiB.
+  UPLOADS_MAX_BYTES: z.coerce.number().int().positive().default(5 * 1024 * 1024),
 });
 
 const resultado = envSchema.safeParse(process.env);

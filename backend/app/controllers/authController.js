@@ -3,12 +3,18 @@ const { ok, criado } = require('../utils/responder');
 const { opcoesCookieRefresh } = require('../utils/tokens');
 const env = require('../config/env');
 const asyncHandler = require('../utils/asyncHandler');
+const { derivarVariantes } = require('../utils/variantesImagem');
 
 function contextoDaRequisicao(req) {
   return {
     user_agent: req.get('user-agent') || null,
     ip: req.ip || null,
   };
+}
+
+function representarUsuario(usuario) {
+  if (!usuario) return usuario;
+  return { ...usuario, imagens: derivarVariantes(usuario.foto_url) };
 }
 
 function setarCookieRefresh(res, refreshTokenCru) {
@@ -25,7 +31,7 @@ exports.registrar = asyncHandler(async (req, res) => {
     contextoDaRequisicao(req)
   );
   setarCookieRefresh(res, refreshTokenCru);
-  return criado(res, { usuario, accessToken });
+  return criado(res, { usuario: representarUsuario(usuario), accessToken });
 });
 
 exports.login = asyncHandler(async (req, res) => {
@@ -34,7 +40,7 @@ exports.login = asyncHandler(async (req, res) => {
     contextoDaRequisicao(req)
   );
   setarCookieRefresh(res, refreshTokenCru);
-  return ok(res, { usuario, accessToken });
+  return ok(res, { usuario: representarUsuario(usuario), accessToken });
 });
 
 exports.refresh = asyncHandler(async (req, res) => {
@@ -44,7 +50,7 @@ exports.refresh = asyncHandler(async (req, res) => {
     contextoDaRequisicao(req)
   );
   setarCookieRefresh(res, refreshTokenCru);
-  return ok(res, { usuario, accessToken });
+  return ok(res, { usuario: representarUsuario(usuario), accessToken });
 });
 
 exports.logout = asyncHandler(async (req, res) => {
@@ -56,5 +62,5 @@ exports.logout = asyncHandler(async (req, res) => {
 
 exports.eu = asyncHandler(async (req, res) => {
   const usuario = await authService.eu(req.usuario.id);
-  return ok(res, { usuario });
+  return ok(res, { usuario: representarUsuario(usuario) });
 });

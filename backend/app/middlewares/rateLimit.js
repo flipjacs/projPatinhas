@@ -31,4 +31,15 @@ const limitadorGlobal = rateLimit({
   handler: envelopeErro,
 });
 
-module.exports = { limitadorAuth, limitadorGlobal };
+// Uploads são caros (sharp + I/O). Limitamos por usuário autenticado quando
+// possível e cai para IP em chamadas anônimas — defesa contra abuso/flood.
+const limitadorUpload = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 min
+  limit: 30,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  keyGenerator: (req) => (req.usuario?.id ? `u:${req.usuario.id}` : `ip:${req.ip}`),
+  handler: envelopeErro,
+});
+
+module.exports = { limitadorAuth, limitadorGlobal, limitadorUpload };

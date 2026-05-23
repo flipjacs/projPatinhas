@@ -302,7 +302,8 @@ p {
 }
 
 .btn:disabled,
-.btn[aria-disabled='true'] {
+.btn[aria-disabled='true'],
+.btn--disabled {
   opacity: 0.55;
   cursor: not-allowed;
   transform: none;
@@ -344,6 +345,12 @@ p {
   color: var(--color-text);
 }
 
+.btn--danger {
+  background: #c0392b;
+  color: var(--color-text-inverse);
+  box-shadow: var(--shadow-sm);
+}
+
 @media (hover: hover) {
   .btn--primary:hover:not(:disabled) {
     background: var(--color-pink-600);
@@ -360,6 +367,11 @@ p {
   .btn--ghost:hover:not(:disabled) {
     background: var(--color-pink-50);
     color: var(--color-pink-700);
+  }
+
+  .btn--danger:hover:not(:disabled) {
+    background: #a93226;
+    transform: translateY(-1px);
   }
 }
 
@@ -497,4 +509,30 @@ p {
   text-transform: uppercase;
   font-weight: 700;
   color: var(--color-pink-700);
+}
+
+/* ──────────────────────────────────────────────────────────
+   LAYOUT UTILITIES
+   Colunas responsivas — colapsam para 1fr no mobile.
+   ────────────────────────────────────────────────────────── */
+.row-2,
+.row-3 {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.row-2 { grid-template-columns: 1fr 1fr; }
+.row-3 { grid-template-columns: repeat(3, 1fr); }
+
+@media (max-width: 640px) {
+  .row-2,
+  .row-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
 }

@@ -1,0 +1,51 @@
+.banner {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid transparent;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
+}
+
+.banner-conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.banner-conteudo strong {
+  font-size: var(--fs-base);
+  font-weight: 700;
+}
+
+.banner-conteudo p {
+  font-size: var(--fs-sm);
+  margin: 0;
+}
+
+.banner--erro {
+  background: var(--color-error-bg);
+  border-color: #fecaca;
+  color: #7f1d1d;
+}
+
+.banner--sucesso {
+  background: var(--color-success-bg);
+  border-color: #b6e6c4;
+  color: #14532d;
+}
+
+.banner--info {
+  background: var(--color-pink-50);
+  border-color: var(--color-pink-200);
+  color: var(--color-pink-800);
+}
+
+.banner--aviso {
+  background: #fffbeb;
+  border-color: #fde68a;
+  color: #92400e;
+}

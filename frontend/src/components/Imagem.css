@@ -1,0 +1,59 @@
+/* ─────────────────────────────────────────────────────────────
+   <Imagem /> — caixa responsiva com aspect-ratio e placeholder.
+   A caixa SEMPRE reserva espaço (CLS=0); a <img> só preenche
+   por dentro. Placeholder em pink-50/100 mantém a marca.
+   ───────────────────────────────────────────────────────────── */
+
+/* Usamos :where() para baixar a especificidade a zero — assim qualquer classe
+   consumidora (ex: .dash-item-thumb 64×64) sobrescreve naturalmente. */
+:where(.imagem) {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  /* Cor de fundo coerente com o resto do app — evita "pop" branco
+     enquanto a imagem decodifica. */
+  background: linear-gradient(135deg, var(--color-pink-50), var(--color-pink-100));
+}
+
+/* `padrao` herda o radius do contêiner — assim os wrappers da página
+   (.card-media, .animal-detail-media, .modal-left) seguem ditando o formato
+   e não temos cantos arredondados aninhados/inconsistentes. */
+:where(.imagem--padrao) {
+  border-radius: inherit;
+}
+
+:where(.imagem--redonda) {
+  border-radius: 50%;
+}
+
+:where(.imagem) img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Suaviza a aparição da imagem quando a decode termina. */
+  opacity: 1;
+  transition: opacity 200ms var(--ease-out, ease-out);
+}
+
+/* Quando a caixa fica em estado vazio (sem src / erro), centralizamos um
+   placeholder textual. Mantém altura graças ao aspect-ratio embutido. */
+:where(.imagem--vazia) {
+  display: grid;
+  place-items: center;
+  color: var(--color-pink-700);
+}
+
+:where(.imagem-placeholder) {
+  font-size: clamp(1.5rem, 6vw, 3rem);
+  font-weight: 700;
+  letter-spacing: var(--tracking-tight);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(.imagem) img {
+    transition: none;
+  }
+}

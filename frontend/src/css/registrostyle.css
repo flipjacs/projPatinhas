@@ -265,14 +265,10 @@
   color: var(--color-text-soft);
 }
 
-/* ──────────────── FIELD GRID ──────────────── */
-.row-2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-4);
-}
+/* ──────────────── FORM ESPECÍFICO ────────────────
+   .row-2 vem de index.css (utility global).
+   ─────────────────────────────────────────────── */
 
-/* Registro form uses tighter label-to-input spacing */
 .registro-form .field {
   gap: var(--space-1);
 }
@@ -511,11 +507,7 @@
 }
 
 @media (max-width: 640px) {
-  .row-2 {
-    grid-template-columns: 1fr;
-    gap: var(--space-4);
-  }
-
+  /* colapso do .row-2 já vem do utility global em index.css */
   .avatar-zone {
     flex-direction: column;
     align-items: center;

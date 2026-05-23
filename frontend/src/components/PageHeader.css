@@ -1,0 +1,189 @@
+/* ─────────────────────────────────────────────────────────────
+   PageHeader — cabeçalho unificado das páginas internas.
+   ───────────────────────────────────────────────────────────── */
+
+.ph {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ─── Trilha / breadcrumbs ─────────────────────────────────── */
+.ph-trilha {
+  /* O nav é um container neutro; visual fica na ol e no back link. */
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}
+
+/* Versão desktop: lista horizontal com chevrons. */
+.ph-crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ph-crumb {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.ph-crumb-link {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-2);
+  margin: calc(-1 * var(--space-1)) calc(-1 * var(--space-2));
+  border-radius: var(--radius-xs);
+  color: var(--color-text-muted);
+  font-weight: 600;
+  letter-spacing: var(--tracking-snug);
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .ph-crumb-link:hover {
+    color: var(--color-pink-700);
+    background: var(--color-pink-50);
+  }
+}
+
+.ph-crumb-link:focus-visible {
+  outline: none;
+  color: var(--color-pink-800);
+  box-shadow: var(--shadow-focus);
+}
+
+.ph-crumb-atual {
+  color: var(--color-pink-700);
+  font-weight: 700;
+  letter-spacing: var(--tracking-snug);
+  /* Trunca cabeçalhos longos sem quebrar a linha do breadcrumb. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 28ch;
+}
+
+.ph-crumb-sep {
+  width: 0.625rem;
+  height: 0.625rem;
+  color: var(--color-text-soft);
+  /* Compensa o baseline da fonte para alinhar com o texto. */
+  margin-inline: var(--space-1);
+}
+
+/* ─── Back link (mobile + standalone) ──────────────────────── */
+.ph-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  margin-left: calc(-1 * var(--space-3));
+  border-radius: var(--radius-md);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-pink-700);
+  text-decoration: none;
+  letter-spacing: var(--tracking-snug);
+  min-height: 2.5rem;
+  transition: background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+.ph-back-icon {
+  width: 0.75rem;
+  height: 0.75rem;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .ph-back:hover {
+    color: var(--color-pink-800);
+    background: var(--color-pink-50);
+  }
+  .ph-back:hover .ph-back-icon {
+    /* Pequeno empurrão à esquerda — sugere a ação sem ser distrativo. */
+    transform: translateX(-2px);
+  }
+}
+
+.ph-back:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+  background: var(--color-pink-50);
+}
+
+/* O back de mobile fica oculto no desktop; o de desktop (a lista de
+   crumbs) fica oculto no mobile. Uma só fonte de verdade no JSX. */
+.ph-back--mobile { display: none; }
+
+@media (max-width: 560px) {
+  .ph-back--mobile { display: inline-flex; }
+  .ph-crumbs { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ph-back:hover .ph-back-icon {
+    transform: none;
+  }
+}
+
+/* ─── Título + descrição + ações ───────────────────────────── */
+.ph-row {
+  display: flex;
+  gap: var(--space-5);
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.ph-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.ph-title {
+  font-size: clamp(var(--fs-2xl), 4vw, var(--fs-3xl));
+  color: var(--color-pink-800);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--lh-tight);
+  margin: 0;
+}
+
+.ph-desc {
+  color: var(--color-text-muted);
+  line-height: var(--lh-loose);
+  max-width: 60ch;
+  margin: 0;
+}
+
+.ph-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* No mobile, as ações descem para baixo e ocupam a linha cheia. */
+@media (max-width: 720px) {
+  .ph-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .ph-acoes {
+    width: 100%;
+  }
+  .ph-acoes > * {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}

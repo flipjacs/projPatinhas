@@ -33,10 +33,14 @@
   max-width: 50ch;
 }
 
-.ongs-container {
+.ongs-container,
+.ongs-skeleton-wrap {
   width: 92%;
   max-width: var(--container-xl);
   margin: var(--space-12) auto var(--space-20);
+}
+
+.ongs-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--space-5);
@@ -87,6 +91,13 @@
   font-size: var(--fs-lg);
   color: var(--color-text);
   margin: var(--space-4) var(--space-5) var(--space-2);
+}
+
+.ong-localizacao {
+  margin: 0 var(--space-5) var(--space-2);
+  color: var(--color-text-soft);
+  font-size: var(--fs-sm);
+  font-weight: 500;
 }
 
 .ongs-container .card p {

@@ -1,0 +1,303 @@
+/* ─────────────────────────────────────────────────────────────
+   UploadFoto — drop zone + preview + progresso
+   Duas formas: "cartao" (animal/ONG) e "circulo" (avatar).
+   ───────────────────────────────────────────────────────────── */
+
+.upload-foto {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.upload-foto-header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.upload-foto-label {
+  font-weight: 600;
+  color: var(--color-text);
+  font-size: var(--fs-sm);
+  letter-spacing: var(--tracking-snug);
+}
+
+.upload-foto-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+  white-space: nowrap;
+}
+
+/* ─── Dropzone vazia (botão) ─── */
+.upload-foto-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  background: var(--color-pink-50);
+  border: 2px dashed var(--color-border-strong);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8) var(--space-6);
+  font-family: inherit;
+  color: var(--color-text);
+  text-align: center;
+  cursor: pointer;
+  transition:
+    border-color var(--transition-base),
+    background-color var(--transition-base),
+    box-shadow var(--transition-base),
+    transform var(--transition-base);
+}
+
+.upload-foto-dropzone:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (hover: hover) {
+  .upload-foto-dropzone:hover:not(:disabled) {
+    background: var(--color-pink-100);
+    border-color: var(--color-pink-400);
+  }
+}
+
+.upload-foto-dropzone:focus-visible {
+  outline: none;
+  border-color: var(--color-pink-500);
+  box-shadow: var(--shadow-focus);
+}
+
+.upload-foto-dropzone.is-arrastando {
+  border-style: solid;
+  border-color: var(--color-pink-500);
+  background: var(--color-pink-100);
+  box-shadow: var(--shadow-brand);
+  transform: translateY(-1px);
+}
+
+/* Estado de erro (campo obrigatório vazio ao submeter) — combina com o
+   visual do <Campo aria-invalid> para o usuário reconhecer instantaneamente
+   o que precisa preencher. */
+.upload-foto-dropzone.is-erro {
+  border-color: var(--color-error);
+  background: var(--color-error-bg);
+}
+
+.upload-foto-icon {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.upload-foto-cta {
+  font-size: var(--fs-base);
+  color: var(--color-text);
+}
+
+.upload-foto-cta strong {
+  color: var(--color-pink-700);
+  font-weight: 700;
+}
+
+.upload-foto-meta {
+  font-size: var(--fs-xs);
+  color: var(--color-text-soft);
+}
+
+/* ─── Forma circular (avatar) ─── */
+.upload-foto--circulo .upload-foto-dropzone {
+  min-height: 8rem;
+  padding: var(--space-6) var(--space-5);
+}
+
+/* ─── Forma cartão (animal/ONG) ─── */
+.upload-foto--cartao .upload-foto-dropzone {
+  min-height: 12rem;
+}
+
+/* ─── Preview (estado com imagem) ─── */
+.upload-foto-preview {
+  display: flex;
+  gap: var(--space-5);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  align-items: center;
+  transition: border-color var(--transition-base);
+}
+
+.upload-foto-preview.is-erro {
+  border-color: var(--color-error);
+  background: var(--color-error-bg);
+}
+
+.upload-foto-figura {
+  position: relative;
+  flex: 0 0 auto;
+  background: var(--color-pink-50);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.upload-foto-figura img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.upload-foto--circulo .upload-foto-figura {
+  width: 7.5rem;
+  height: 7.5rem;
+  border-radius: 50%;
+  border: 3px solid var(--color-pink-200);
+}
+
+.upload-foto--cartao .upload-foto-figura {
+  width: 10rem;
+  height: 7.5rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+}
+
+/* ─── Overlay de carregamento sobre a imagem ─── */
+.upload-foto-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(45, 30, 40, 0.35);
+  display: grid;
+  place-items: center;
+}
+
+.upload-foto-spinner {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #ffffff;
+  animation: upload-foto-girar 0.8s linear infinite;
+}
+
+@keyframes upload-foto-girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Respeita usuários com preferência por menos movimento — paramos a
+   rotação e suavizamos a barra de progresso (mantemos a transição porque
+   ela carrega informação útil, só reduzimos a duração). */
+@media (prefers-reduced-motion: reduce) {
+  .upload-foto-spinner {
+    animation: none;
+    /* Mantém visibilidade da operação via círculo estático com gradiente. */
+    border-top-color: rgba(255, 255, 255, 0.85);
+  }
+
+  .upload-foto-dropzone,
+  .upload-foto-preview {
+    transition: none;
+  }
+
+  .upload-foto-dropzone.is-arrastando {
+    transform: none;
+  }
+
+  .upload-foto-progresso-barra {
+    transition-duration: 60ms;
+  }
+}
+
+/* ─── Info / barra de progresso ─── */
+.upload-foto-info {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.upload-foto-info-linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.upload-foto-info-texto {
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.upload-foto-progresso {
+  width: 100%;
+  height: 6px;
+  background: var(--color-pink-100);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.upload-foto-progresso-barra {
+  height: 100%;
+  background: var(--color-pink-500);
+  border-radius: var(--radius-full);
+  transition: width 150ms linear;
+}
+
+.upload-foto-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* ─── Mensagens ─── */
+.upload-foto-hint {
+  font-size: var(--fs-xs);
+  color: var(--color-text-soft);
+}
+
+.upload-foto-erro {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-error);
+  margin: 0;
+}
+
+/* ─── Responsivo: empilha preview/ações no mobile ─── */
+@media (max-width: 560px) {
+  .upload-foto-preview {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .upload-foto-figura {
+    margin-inline: auto;
+  }
+
+  .upload-foto--cartao .upload-foto-figura {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+
+  .upload-foto-info-linha {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-2);
+  }
+
+  .upload-foto-acoes {
+    justify-content: center;
+  }
+}

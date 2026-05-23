@@ -4,6 +4,20 @@ import react from '@vitejs/plugin-react';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+      // Imagens servidas pelo backend (driver local). Em produção um
+      // reverse proxy / CDN cobre esse caminho.
+      '/uploads': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+    },
+  },
   build: {
     target: 'es2022',
     cssMinify: 'lightningcss',

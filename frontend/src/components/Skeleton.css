@@ -1,0 +1,59 @@
+/* ──────────────────────────────────────────────────────────
+   SKELETONS — usados enquanto listas carregam.
+   Visual neutro em tons de pink-50/100; nada chamativo.
+   ────────────────────────────────────────────────────────── */
+
+@keyframes skeleton-pulse {
+  0%   { opacity: 1;    }
+  50%  { opacity: 0.55; }
+  100% { opacity: 1;    }
+}
+
+.skeleton-card {
+  /* mantém a forma do card real para não causar layout shift quando os
+     dados chegarem; padding já vem do .card via adotaranimalstyle. */
+  pointer-events: none;
+}
+
+.skeleton-media {
+  aspect-ratio: 4 / 3;
+  background: linear-gradient(135deg, var(--color-pink-100), var(--color-pink-200));
+  animation: skeleton-pulse 1.4s var(--ease-in-out) infinite;
+}
+
+.skeleton-line {
+  height: 0.75rem;
+  border-radius: var(--radius-xs);
+  background: var(--color-pink-100);
+  animation: skeleton-pulse 1.4s var(--ease-in-out) infinite;
+}
+
+.skeleton-line--title {
+  height: 1.25rem;
+  width: 60%;
+}
+
+.skeleton-line--meta {
+  height: 0.6rem;
+  width: 80%;
+}
+
+.skeleton-line--short {
+  width: 70%;
+}
+
+.skeleton-btn {
+  margin-top: auto;
+  height: 3rem;
+  border-radius: var(--radius-full);
+  background: var(--color-pink-200);
+  animation: skeleton-pulse 1.4s var(--ease-in-out) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-media,
+  .skeleton-line,
+  .skeleton-btn {
+    animation: none;
+  }
+}

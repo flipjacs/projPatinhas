@@ -1,0 +1,185 @@
+/* ─────────────────────────────────────────────────────────────
+   ConfirmSaveDialog — modal "Salvar alterações?"
+   ───────────────────────────────────────────────────────────── */
+
+.csd {
+  padding: clamp(var(--space-5), 4vw, var(--space-7));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.csd-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-right: 2.5rem; /* respira do botão de fechar do Modal */
+}
+
+.csd-title {
+  font-size: var(--fs-xl);
+  color: var(--color-pink-800);
+  margin: 0;
+  letter-spacing: var(--tracking-snug);
+  line-height: var(--lh-tight);
+}
+
+.csd-sub {
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* ─── Lista de mudanças ──────────────────────────────────── */
+.csd-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.csd-item {
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-pink-50);
+  border: 1px solid var(--color-pink-100);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.csd-item-label {
+  font-size: var(--fs-xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-pink-700);
+  font-weight: 700;
+  margin: 0;
+}
+
+/* ─── Diff inline (texto/removido) ──────────────────────── */
+.csd-diff {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+  color: var(--color-text);
+  /* Permite quebrar valores longos sem estourar o modal. */
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.csd-diff-antes,
+.csd-diff-depois,
+.csd-diff-removido {
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-xs);
+  font-variant-numeric: tabular-nums;
+  /* Permite truncar valores ridiculamente longos sem quebrar layout. */
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.csd-diff-antes {
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  text-decoration: line-through;
+  text-decoration-color: var(--color-text-soft);
+  text-decoration-thickness: 1px;
+}
+
+.csd-diff-depois {
+  color: var(--color-pink-800);
+  background: var(--color-surface);
+  border: 1px solid var(--color-pink-300);
+  font-weight: 600;
+}
+
+.csd-diff-removido {
+  color: #7f1d1d;
+  background: var(--color-error-bg);
+  border: 1px solid #fecaca;
+  font-weight: 600;
+}
+
+.csd-diff em {
+  font-style: italic;
+  color: var(--color-text-soft);
+  font-weight: 500;
+}
+
+.csd-diff-seta {
+  color: var(--color-text-soft);
+  font-weight: 600;
+  flex: 0 0 auto;
+}
+
+/* ─── Diff de foto ───────────────────────────────────────── */
+.csd-diff--foto {
+  justify-content: center;
+}
+
+.csd-foto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.csd-foto img,
+.csd-foto-vazia {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--color-pink-200);
+  background: var(--color-pink-50);
+  display: grid;
+  place-items: center;
+  color: var(--color-text-soft);
+  font-size: 1.25rem;
+}
+
+.csd-foto-rotulo {
+  font-size: var(--fs-xs);
+  color: var(--color-text-soft);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* ─── Erro inline (falha ao salvar dentro do modal) ──── */
+.csd-erro {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-error-bg);
+  border: 1px solid #fecaca;
+  border-left: 4px solid var(--color-error);
+  border-radius: var(--radius-md);
+  color: #7f1d1d;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+}
+
+/* ─── Ações ──────────────────────────────────────────────── */
+.csd-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: flex-end;
+  margin-top: var(--space-1);
+}
+
+@media (max-width: 480px) {
+  .csd-acoes {
+    flex-direction: column-reverse;
+  }
+  .csd-acoes .btn {
+    width: 100%;
+  }
+}
