@@ -512,7 +512,7 @@ function SucessoCadastro({ nome, aoCadastrarOutro }) {
           >
             Cadastrar outro animal
           </button>
-          <Link to="/meus-animais" className="btn btn--secondary btn--lg">
+          <Link to="/minha-area/animais" className="btn btn--secondary btn--lg">
             Ver meus animais
           </Link>
           <Link to="/adotar" className="btn btn--ghost btn--lg">
