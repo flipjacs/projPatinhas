@@ -11,6 +11,13 @@ build/
 # Cobertura de testes
 coverage/
 
+# Cache de ferramentas
+.eslintcache
+*.tsbuildinfo
+
+# Config local de ferramentas de IA (Claude Code) — por dev, nunca versionar
+.claude/
+
 # Variáveis de ambiente
 .env
 .env.local
@@ -36,3 +43,5 @@ uploads/
 .DS_Store
 Thumbs.db
 *.local
+
+APRESENTACAO.md
